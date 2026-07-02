@@ -13,10 +13,31 @@
       https://nuget.samboy.dev/v3/index.json
     </RestoreAdditionalProjectSources>
     <RootNamespace>readline_terminal_keybindings</RootNamespace>
+    <ConfigDir Condition="'$(XDG_CONFIG_HOME)' != ''">$(XDG_CONFIG_HOME)</ConfigDir>
+    <ConfigDir Condition="'$(XDG_CONFIG_HOME)' == ''">$(HOME)/.config</ConfigDir>
+    <ConfigDir Condition="'$(AppData)' != ''">$(AppData)</ConfigDir>
+    <Profile>Development</Profile>
+    <BepInEx>$(ConfigDir)/r2modmanPlus-local/GTFO/profiles/$(Profile)\BepInEx</BepInEx>
+    <BuildDirectory>$(BepInEx)\plugins\$(SolutionName)\</BuildDirectory>
+    <OutputPath>$(BuildDirectory)</OutputPath>
   </PropertyGroup>
 
+  <Target Name="PostBuild" BeforeTargets="PostBuildEvent">
+    <Delete Files="$(OutputPath)$(AssemblyName).deps.json" />
+  </Target>
+
   <ItemGroup>
-    <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.*" IncludeAssets="compile" />
+    <PackageReference Include="BepInEx.Core" Version="6.0.0-be.655" />
+    <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.655" IncludeAssets="compile" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+    <PackageReference Include="Il2CppInterop.Common" Version="1.5.3" />
+    <PackageReference Include="Il2CppInterop.Runtime" Version="1.5.3" />
+    <PackageReference Include="Lib.Harmony" Version="2.4.2" />
+    <Reference Include="Modules-ASM" HintPath="lib/Modules-ASM.dll" />
+    <Reference Include="Unity.TextMeshPro" HintPath="lib/Unity.TextMeshPro.dll" />
+    <Reference Include="Unity.InputModule" HintPath="lib/Unity.InputModule.dll" />
+    <Reference Include="Unity.InputLegacyModule" HintPath="lib/Unity.InputLegacyModule.dll" />
+    <Reference Include="Unity.CoreModule" HintPath="lib/UnityEngine.CoreModule.dll" />
+    <Reference Include="Il2Cppmscorlib" HintPath="lib/Il2Cppmscorlib.dll" />
   </ItemGroup>
 </Project>
