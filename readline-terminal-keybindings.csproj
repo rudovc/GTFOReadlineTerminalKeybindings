@@ -19,12 +19,13 @@
     <Profile>Development</Profile>
     <BepInEx>$(ConfigDir)/r2modmanPlus-local/GTFO/profiles/$(Profile)\BepInEx</BepInEx>
     <BuildDirectory>$(BepInEx)\plugins\$(SolutionName)\</BuildDirectory>
-    <OutputPath>$(BuildDirectory)</OutputPath>
   </PropertyGroup>
 
   <Target Name="PostBuild" BeforeTargets="PostBuildEvent">
     <Delete Files="$(OutputPath)$(AssemblyName).deps.json" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BuildDirectory)" />
   </Target>
+
 
   <ItemGroup>
     <PackageReference Include="BepInEx.Core" Version="6.0.0-be.655" />
