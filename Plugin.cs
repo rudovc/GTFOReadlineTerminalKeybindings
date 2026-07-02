@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿using System.Collections.Generic;
+using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
@@ -35,22 +36,32 @@ public class Plugin : BasePlugin
 [HarmonyPatch(typeof(LevelGeneration.LG_ComputerTerminal), "Update")]
 public static class ReadlineTerminalKeybindingsPatch
 {
+    private static readonly HashSet<BepInEx.Unity.IL2CPP.UnityEngine.KeyCode> s_heldKeys = new();
+
+    private static bool GetKeyDown(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode key)
+    {
+        bool isPressed = BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(key);
+        if (isPressed)
+        {
+            return s_heldKeys.Add(key);
+        }
+
+        s_heldKeys.Remove(key);
+        return false;
+    }
+
     [HarmonyPrefix]
     public static void CheckCtrlHeldDown(LevelGeneration.LG_ComputerTerminal __instance)
     {
-        if (
-            BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(
-                BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.LeftControl
-            )
-        )
+        bool ctrlHeld = BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(
+            BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.LeftControl
+        );
+
+        if (ctrlHeld)
         {
             Plugin.Log.LogDebug("^ is being held down");
 
-            if (
-                BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(
-                    BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.A
-                )
-            )
+            if (GetKeyDown(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.A))
             {
                 Plugin.Log.LogDebug("^A");
 
@@ -64,11 +75,7 @@ public static class ReadlineTerminalKeybindingsPatch
                 __instance.m_caretBlinkOffsetFromEnd = -__instance.m_currentLine.Length;
             }
 
-            if (
-                BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(
-                    BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.E
-                )
-            )
+            if (GetKeyDown(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.E))
             {
                 Plugin.Log.LogDebug("^E");
 
@@ -79,11 +86,7 @@ public static class ReadlineTerminalKeybindingsPatch
                 __instance.m_caretBlinkOffsetFromEnd = 0;
             }
 
-            if (
-                BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(
-                    BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.U
-                )
-            )
+            if (GetKeyDown(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.U))
             {
                 Plugin.Log.LogDebug("^U");
 
@@ -112,56 +115,55 @@ public static class ReadlineTerminalKeybindingsPatch
             //     commandInterpreter.m_inputBuffer =
             //         new Il2CppSystem.Collections.Generic.List<string>();
             // }
+
+            return;
         }
 
-        if (
-            BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(
-                BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.LeftAlt
-            )
-        )
-        {
-            string line = __instance.m_currentLine;
-            int lineLen = line.Length;
-            int curIdx = lineLen + __instance.m_caretBlinkOffsetFromEnd;
+        // Causes a weird bug where the cursor jumps randomly after being used once
+        // bool altHeld = BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(
+        //     BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.LeftAlt
+        // );
+        //
+        // if (altHeld)
+        // {
+        //     string line = __instance.m_currentLine;
+        //     int lineLen = line.Length;
+        //     int curIdx = lineLen + __instance.m_caretBlinkOffsetFromEnd;
+        //
+        //     curIdx = System.Math.Clamp(curIdx, 0, lineLen);
+        //
+        //     if (GetKeyDown(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.F))
+        //     {
+        //         Plugin.Log.LogDebug("^F");
+        //
+        //         int i = curIdx;
+        //
+        //         while (i < lineLen && line[i] != ' ')
+        //             i++;
+        //         while (i < lineLen && line[i] == ' ')
+        //             i++;
+        //
+        //         __instance.m_caretBlinkOffsetFromEnd = i - lineLen;
+        //     }
+        //
+        //     if (GetKeyDown(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.B))
+        //     {
+        //         Plugin.Log.LogDebug("^B");
+        //
+        //         int i = curIdx - 1;
+        //
+        //         while (i >= 0 && line[i] == ' ')
+        //             i--;
+        //         while (i >= 0 && line[i] != ' ')
+        //             i--;
+        //
+        //         int target = i + 1;
+        //         __instance.m_caretBlinkOffsetFromEnd = target - lineLen;
+        //     }
+        //
+        //     return;
+        // }
 
-            curIdx = System.Math.Clamp(curIdx, 0, lineLen);
-
-            if (
-                BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(
-                    BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.F
-                )
-            )
-            {
-                Plugin.Log.LogDebug("^F");
-
-                int i = curIdx;
-
-                while (i < lineLen && line[i] != ' ')
-                    i++;
-                while (i < lineLen && line[i] == ' ')
-                    i++;
-
-                __instance.m_caretBlinkOffsetFromEnd = i - lineLen;
-            }
-
-            if (
-                BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(
-                    BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.B
-                )
-            )
-            {
-                Plugin.Log.LogDebug("^B");
-
-                int i = curIdx - 1;
-
-                while (i >= 0 && line[i] == ' ')
-                    i--;
-                while (i >= 0 && line[i] != ' ')
-                    i--;
-
-                int target = i + 1;
-                __instance.m_caretBlinkOffsetFromEnd = target - lineLen;
-            }
-        }
+        s_heldKeys.Clear();
     }
 }
