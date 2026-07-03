@@ -58,12 +58,16 @@ public static class ReadlineTerminalKeybindingsPatch
     [HarmonyPrefix]
     public static void CheckCtrlHeldDown(LevelGeneration.LG_ComputerTerminal __instance)
     {
+        var currentLine = __instance.m_currentLine;
+
         // Reset caret offset on submit/clear (line goes from non-empty to empty)
-        if (s_previousLine.Length > 0 && __instance.m_currentLine.Length == 0)
+        if (s_previousLine.Length > 0 && currentLine.Length == 0)
         {
             __instance.m_caretBlinkOffsetFromEnd = 0;
         }
-        s_previousLine = __instance.m_currentLine;
+        s_previousLine = currentLine;
+
+        var offset = __instance.m_caretBlinkOffsetFromEnd;
 
         var ctrlHeld = UnityInput.GetKeyInt(KeyCode.LeftControl);
 
@@ -76,10 +80,10 @@ public static class ReadlineTerminalKeybindingsPatch
                 Plugin.Log.LogDebug("^A");
 
                 Plugin.Log.LogDebug(
-                    $"setting offset from {__instance.m_caretBlinkOffsetFromEnd} to {-__instance.m_currentLine.Length}"
+                    $"setting offset from {offset} to {-currentLine.Length}"
                 );
 
-                __instance.m_caretBlinkOffsetFromEnd = -__instance.m_currentLine.Length;
+                __instance.m_caretBlinkOffsetFromEnd = -currentLine.Length;
             }
 
             if (GetKeyDown(KeyCode.E))
@@ -87,7 +91,7 @@ public static class ReadlineTerminalKeybindingsPatch
                 Plugin.Log.LogDebug("^E");
 
                 Plugin.Log.LogDebug(
-                    $"setting offset from {__instance.m_caretBlinkOffsetFromEnd} to {0}"
+                    $"setting offset from {offset} to {0}"
                 );
 
                 __instance.m_caretBlinkOffsetFromEnd = 0;
@@ -97,7 +101,7 @@ public static class ReadlineTerminalKeybindingsPatch
             {
                 Plugin.Log.LogDebug("^U");
 
-                Plugin.Log.LogDebug($"Setting current line {__instance.m_currentLine} to empty");
+                Plugin.Log.LogDebug($"Setting current line {currentLine} to empty");
 
                 __instance.m_currentLine = "";
             }
@@ -128,10 +132,9 @@ public static class ReadlineTerminalKeybindingsPatch
 
         if (altHeld)
         {
-            var line = __instance.m_currentLine;
-            var lineLen = line.Length;
+            var lineLen = currentLine.Length;
             var curIdx = System.Math.Clamp(
-                lineLen + __instance.m_caretBlinkOffsetFromEnd,
+                lineLen + offset,
                 0,
                 lineLen
             );
@@ -142,13 +145,13 @@ public static class ReadlineTerminalKeybindingsPatch
 
                 var i = curIdx;
 
-                while (i < lineLen && line[i] != ' ')
+                while (i < lineLen && currentLine[i] != ' ')
                     i++;
-                while (i < lineLen && line[i] == ' ')
+                while (i < lineLen && currentLine[i] == ' ')
                     i++;
 
                 Plugin.Log.LogDebug(
-                    $"setting offset from {__instance.m_caretBlinkOffsetFromEnd} to {i - lineLen}"
+                    $"setting offset from {offset} to {i - lineLen}"
                 );
                 __instance.m_caretBlinkOffsetFromEnd = i - lineLen;
             }
@@ -159,14 +162,14 @@ public static class ReadlineTerminalKeybindingsPatch
 
                 var i = curIdx - 1;
 
-                while (i >= 0 && line[i] == ' ')
+                while (i >= 0 && currentLine[i] == ' ')
                     i--;
-                while (i >= 0 && line[i] != ' ')
+                while (i >= 0 && currentLine[i] != ' ')
                     i--;
 
                 var target = i + 1;
                 Plugin.Log.LogDebug(
-                    $"setting offset from {__instance.m_caretBlinkOffsetFromEnd} to {target - lineLen}"
+                    $"setting offset from {offset} to {target - lineLen}"
                 );
                 __instance.m_caretBlinkOffsetFromEnd = target - lineLen;
             }
