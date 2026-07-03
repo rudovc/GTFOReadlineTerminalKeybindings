@@ -123,6 +123,15 @@ public static class ReadlineTerminalKeybindingsPatch
                 __instance.m_currentLine = currentLine.Remove(wordStart, curIdx - wordStart);
             }
 
+            if (GetKeyDown(KeyCode.K))
+            {
+                Plugin.Log.LogDebug("^K");
+
+                Plugin.Log.LogDebug($"truncating from {curIdx} to end");
+                __instance.m_currentLine = currentLine.Substring(0, curIdx);
+                __instance.m_caretBlinkOffsetFromEnd = 0;
+            }
+
             // Bugged right now
             // if (
             //     BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(
