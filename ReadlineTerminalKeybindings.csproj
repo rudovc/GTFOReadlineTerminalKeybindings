@@ -2,16 +2,30 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <AssemblyName>readline_terminal_keybindings</AssemblyName>
+    <AssemblyName>ReadlineTerminalKeybindings</AssemblyName>
     <Version>0.0.1</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>CS1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <RestoreAdditionalProjectSources>
       https://api.nuget.org/v3/index.json;
       https://nuget.bepinex.dev/v3/index.json;
       https://nuget.samboy.dev/v3/index.json
     </RestoreAdditionalProjectSources>
-    <RootNamespace>readline_terminal_keybindings</RootNamespace>
+    <RootNamespace>ReadlineTerminalKeybindings</RootNamespace>
     <ConfigDir Condition="'$(XDG_CONFIG_HOME)' != ''">$(XDG_CONFIG_HOME)</ConfigDir>
     <ConfigDir Condition="'$(XDG_CONFIG_HOME)' == ''">$(HOME)/.config</ConfigDir>
     <ConfigDir Condition="'$(AppData)' != ''">$(AppData)</ConfigDir>

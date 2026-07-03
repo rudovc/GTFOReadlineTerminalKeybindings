@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using KeyCode = BepInEx.Unity.IL2CPP.UnityEngine.KeyCode;
+using UnityInput = BepInEx.Unity.IL2CPP.UnityEngine.Input;
 
-namespace readline_terminal_keybindings;
+namespace ReadlineTerminalKeybindings;
 
 [BepInPlugin(
-    "online.121ducks.rudovc.readline_terminal_keybindings",
+    "online.121ducks.rudovc.ReadlineTerminalKeybindings",
     "Readline Terminal Keybindings",
     "0.0.1"
 )]
@@ -15,10 +17,12 @@ namespace readline_terminal_keybindings;
 [BepInProcess("GTFO.exe")]
 public class Plugin : BasePlugin
 {
-    internal static new ManualLogSource Log;
+    internal static new ManualLogSource Log = null!;
 
-    public readonly char[] CTRL_READLINE_KEYS = ['A', 'E', 'F', 'B', 'L', 'U', 'P', 'N', 'K', 'W'];
-    public readonly char[] ALT_READLINE_KEYS = ['F', 'B', 'P', 'N', 'D'];
+    // Readline key reference (for future use):
+    // Ctrl: A(move to start), E(move to end), F(forward), B(backward),
+    //       L(clear screen), U(clear line), P(prev), N(next), K(delete to end), W(delete word)
+    // Alt:  F(forward word), B(backward word), P(prev), N(next), D(delete word)
 
     public override void Load()
     {
@@ -36,11 +40,11 @@ public class Plugin : BasePlugin
 [HarmonyPatch(typeof(LevelGeneration.LG_ComputerTerminal), "Update")]
 public static class ReadlineTerminalKeybindingsPatch
 {
-    private static readonly HashSet<BepInEx.Unity.IL2CPP.UnityEngine.KeyCode> s_heldKeys = new();
+    private static readonly HashSet<KeyCode> s_heldKeys = [];
 
-    private static bool GetKeyDown(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode key)
+    private static bool GetKeyDown(KeyCode key)
     {
-        bool isPressed = BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(key);
+        var isPressed = UnityInput.GetKeyInt(key);
         if (isPressed)
         {
             return s_heldKeys.Add(key);
@@ -51,50 +55,46 @@ public static class ReadlineTerminalKeybindingsPatch
     }
 
     [HarmonyPrefix]
-    public static void CheckCtrlHeldDown(LevelGeneration.LG_ComputerTerminal __instance)
+    public static void CheckCtrlHeldDown(LevelGeneration.LG_ComputerTerminal instance)
     {
-        bool ctrlHeld = BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(
-            BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.LeftControl
-        );
+        var ctrlHeld = UnityInput.GetKeyInt(KeyCode.LeftControl);
 
         if (ctrlHeld)
         {
             Plugin.Log.LogDebug("^ is being held down");
 
-            if (GetKeyDown(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.A))
+            if (GetKeyDown(KeyCode.A))
             {
                 Plugin.Log.LogDebug("^A");
 
                 Plugin.Log.LogDebug(
                     "setting offset from "
-                        + __instance.m_caretBlinkOffsetFromEnd
+                        + instance.m_caretBlinkOffsetFromEnd
                         + " to "
-                        + -__instance.m_currentLine.Length
+                        + -instance.m_currentLine.Length
                 );
 
-                __instance.m_caretBlinkOffsetFromEnd = -__instance.m_currentLine.Length;
+                instance.m_caretBlinkOffsetFromEnd = -instance.m_currentLine.Length;
             }
 
-            if (GetKeyDown(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.E))
+            if (GetKeyDown(KeyCode.E))
             {
                 Plugin.Log.LogDebug("^E");
 
                 Plugin.Log.LogDebug(
-                    "setting offset from " + __instance.m_caretBlinkOffsetFromEnd + " to " + 0
+                    "setting offset from " + instance.m_caretBlinkOffsetFromEnd + " to " + 0
                 );
 
-                __instance.m_caretBlinkOffsetFromEnd = 0;
+                instance.m_caretBlinkOffsetFromEnd = 0;
             }
 
-            if (GetKeyDown(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.U))
+            if (GetKeyDown(KeyCode.U))
             {
                 Plugin.Log.LogDebug("^U");
 
-                Plugin.Log.LogDebug(
-                    "Setting current line " + __instance.m_currentLine + " to empty"
-                );
+                Plugin.Log.LogDebug("Setting current line " + instance.m_currentLine + " to empty");
 
-                __instance.m_currentLine = "";
+                instance.m_currentLine = "";
             }
 
             // Bugged right now
