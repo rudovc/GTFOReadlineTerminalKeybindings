@@ -1,0 +1,7 @@
+<Solution>
+    <Folder Name="/tests/">
+        <Project
+            Path="tests/ReadlineTerminalKeybindings.Tests/ReadlineTerminalKeybindings.Tests.csproj" />
+    </Folder>
+    <Project Path="ReadlineTerminalKeybindings.csproj" />
+</Solution>

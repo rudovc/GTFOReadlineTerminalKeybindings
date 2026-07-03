@@ -14,3 +14,4 @@ jobs:
         with:
           dotnet-version: '6.0.x'
       - run: dotnet format whitespace --verify-no-changes
+      - run: dotnet test

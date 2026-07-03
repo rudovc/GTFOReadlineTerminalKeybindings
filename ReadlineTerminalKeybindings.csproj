@@ -26,6 +26,7 @@
       https://nuget.samboy.dev/v3/index.json
     </RestoreAdditionalProjectSources>
     <RootNamespace>ReadlineTerminalKeybindings</RootNamespace>
+    <DefaultItemExcludes>$(DefaultItemExcludes);tests/**</DefaultItemExcludes>
     <ConfigDir Condition="'$(XDG_CONFIG_HOME)' != ''">$(XDG_CONFIG_HOME)</ConfigDir>
     <ConfigDir Condition="'$(XDG_CONFIG_HOME)' == ''">$(HOME)/.config</ConfigDir>
     <ConfigDir Condition="'$(AppData)' != ''">$(AppData)</ConfigDir>
