@@ -31,14 +31,14 @@
     <ConfigDir Condition="'$(AppData)' != ''">$(AppData)</ConfigDir>
     <Profile>Development</Profile>
     <BepInEx>$(ConfigDir)/r2modmanPlus-local/GTFO/profiles/$(Profile)\BepInEx</BepInEx>
-    <BuildDirectory>$(BepInEx)\plugins\$(SolutionName)\</BuildDirectory>
+    <BuildDirectory>$(BepInEx)/plugins/$(AssemblyName)/</BuildDirectory>
   </PropertyGroup>
 
   <Target Name="PostBuild" BeforeTargets="PostBuildEvent">
     <Delete Files="$(OutputPath)$(AssemblyName).deps.json" />
     <Copy Condition="'$(Configuration)' == 'Debug'"
       SourceFiles="$(TargetPath);$(TargetDir)$(TargetName).pdb"
-      DestinationFolder="$(BuildDirectory)" />
+      DestinationFolder="$(BuildDirectory)/" />
     <Copy Condition="'$(Configuration)' == 'Release'"
       SourceFiles="$(TargetPath)"
       DestinationFolder="$(ProjectDir)/package/BepInEx/plugins/" />

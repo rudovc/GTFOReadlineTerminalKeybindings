@@ -41,6 +41,7 @@ public class Plugin : BasePlugin
 public static class ReadlineTerminalKeybindingsPatch
 {
     private static readonly HashSet<KeyCode> s_heldKeys = [];
+    private static string s_previousLine = "";
 
     private static bool GetKeyDown(KeyCode key)
     {
@@ -55,8 +56,15 @@ public static class ReadlineTerminalKeybindingsPatch
     }
 
     [HarmonyPrefix]
-    public static void CheckCtrlHeldDown(LevelGeneration.LG_ComputerTerminal instance)
+    public static void CheckCtrlHeldDown(LevelGeneration.LG_ComputerTerminal __instance)
     {
+        // Reset caret offset on submit/clear (line goes from non-empty to empty)
+        if (s_previousLine.Length > 0 && __instance.m_currentLine.Length == 0)
+        {
+            __instance.m_caretBlinkOffsetFromEnd = 0;
+        }
+        s_previousLine = __instance.m_currentLine;
+
         var ctrlHeld = UnityInput.GetKeyInt(KeyCode.LeftControl);
 
         if (ctrlHeld)
@@ -68,28 +76,30 @@ public static class ReadlineTerminalKeybindingsPatch
                 Plugin.Log.LogDebug("^A");
 
                 Plugin.Log.LogDebug(
-                    $"setting offset from {instance.m_caretBlinkOffsetFromEnd} to {-instance.m_currentLine.Length}"
+                    $"setting offset from {__instance.m_caretBlinkOffsetFromEnd} to {-__instance.m_currentLine.Length}"
                 );
 
-                instance.m_caretBlinkOffsetFromEnd = -instance.m_currentLine.Length;
+                __instance.m_caretBlinkOffsetFromEnd = -__instance.m_currentLine.Length;
             }
 
             if (GetKeyDown(KeyCode.E))
             {
                 Plugin.Log.LogDebug("^E");
 
-                Plugin.Log.LogDebug($"setting offset from {instance.m_caretBlinkOffsetFromEnd} to {0}");
+                Plugin.Log.LogDebug(
+                    $"setting offset from {__instance.m_caretBlinkOffsetFromEnd} to {0}"
+                );
 
-                instance.m_caretBlinkOffsetFromEnd = 0;
+                __instance.m_caretBlinkOffsetFromEnd = 0;
             }
 
             if (GetKeyDown(KeyCode.U))
             {
                 Plugin.Log.LogDebug("^U");
 
-                Plugin.Log.LogDebug($"Setting current line {instance.m_currentLine} to empty");
+                Plugin.Log.LogDebug($"Setting current line {__instance.m_currentLine} to empty");
 
-                instance.m_currentLine = "";
+                __instance.m_currentLine = "";
             }
 
             // Bugged right now
@@ -114,50 +124,55 @@ public static class ReadlineTerminalKeybindingsPatch
             return;
         }
 
-        // Causes a weird bug where the cursor jumps randomly after being used once
-        // bool altHeld = BepInEx.Unity.IL2CPP.UnityEngine.Input.GetKeyInt(
-        //     BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.LeftAlt
-        // );
-        //
-        // if (altHeld)
-        // {
-        //     string line = __instance.m_currentLine;
-        //     int lineLen = line.Length;
-        //     int curIdx = lineLen + __instance.m_caretBlinkOffsetFromEnd;
-        //
-        //     curIdx = System.Math.Clamp(curIdx, 0, lineLen);
-        //
-        //     if (GetKeyDown(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.F))
-        //     {
-        //         Plugin.Log.LogDebug("^F");
-        //
-        //         int i = curIdx;
-        //
-        //         while (i < lineLen && line[i] != ' ')
-        //             i++;
-        //         while (i < lineLen && line[i] == ' ')
-        //             i++;
-        //
-        //         __instance.m_caretBlinkOffsetFromEnd = i - lineLen;
-        //     }
-        //
-        //     if (GetKeyDown(BepInEx.Unity.IL2CPP.UnityEngine.KeyCode.B))
-        //     {
-        //         Plugin.Log.LogDebug("^B");
-        //
-        //         int i = curIdx - 1;
-        //
-        //         while (i >= 0 && line[i] == ' ')
-        //             i--;
-        //         while (i >= 0 && line[i] != ' ')
-        //             i--;
-        //
-        //         int target = i + 1;
-        //         __instance.m_caretBlinkOffsetFromEnd = target - lineLen;
-        //     }
-        //
-        //     return;
-        // }
+        var altHeld = UnityInput.GetKeyInt(KeyCode.LeftAlt);
+
+        if (altHeld)
+        {
+            var line = __instance.m_currentLine;
+            var lineLen = line.Length;
+            var curIdx = System.Math.Clamp(
+                lineLen + __instance.m_caretBlinkOffsetFromEnd,
+                0,
+                lineLen
+            );
+
+            if (GetKeyDown(KeyCode.F))
+            {
+                Plugin.Log.LogDebug("A+F");
+
+                var i = curIdx;
+
+                while (i < lineLen && line[i] != ' ')
+                    i++;
+                while (i < lineLen && line[i] == ' ')
+                    i++;
+
+                Plugin.Log.LogDebug(
+                    $"setting offset from {__instance.m_caretBlinkOffsetFromEnd} to {i - lineLen}"
+                );
+                __instance.m_caretBlinkOffsetFromEnd = i - lineLen;
+            }
+
+            if (GetKeyDown(KeyCode.B))
+            {
+                Plugin.Log.LogDebug("A+B");
+
+                var i = curIdx - 1;
+
+                while (i >= 0 && line[i] == ' ')
+                    i--;
+                while (i >= 0 && line[i] != ' ')
+                    i--;
+
+                var target = i + 1;
+                Plugin.Log.LogDebug(
+                    $"setting offset from {__instance.m_caretBlinkOffsetFromEnd} to {target - lineLen}"
+                );
+                __instance.m_caretBlinkOffsetFromEnd = target - lineLen;
+            }
+
+            return;
+        }
 
         s_heldKeys.Clear();
     }

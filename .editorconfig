@@ -62,6 +62,17 @@ csharp_space_between_method_declaration_parameter_list_parentheses = false
 csharp_space_between_method_call_parameter_list_parentheses = false
 
 # Naming conventions
+# Harmony __-prefixed magic parameters
+dotnet_naming_rule.harmony_magic_parameters.severity = none
+dotnet_naming_rule.harmony_magic_parameters.symbols = harmony_parameters
+dotnet_naming_rule.harmony_magic_parameters.style = harmony_prefix_style
+
+dotnet_naming_symbols.harmony_parameters.applicable_kinds = parameter
+dotnet_naming_symbols.harmony_parameters.applicable_accessibilities = *
+
+dotnet_naming_style.harmony_prefix_style.required_prefix = __
+dotnet_naming_style.harmony_prefix_style.capitalization = camel_case
+
 dotnet_naming_rule.private_fields_should_be_camel_case.severity = suggestion
 dotnet_naming_rule.private_fields_should_be_camel_case.symbols = private_fields
 dotnet_naming_rule.private_fields_should_be_camel_case.style = camel_case_underscore_prefix
@@ -89,3 +100,6 @@ dotnet_diagnostic.IDE0290.severity = warning
 dotnet_diagnostic.CA1822.severity = warning
 dotnet_diagnostic.CA1812.severity = suggestion
 dotnet_diagnostic.CA1062.severity = suggestion
+# Harmony magic
+dotnet_diagnostic.CA1707.severity = none
+

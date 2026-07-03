@@ -4,6 +4,7 @@ build:
     dotnet build --configuration Debug
 release:
     dotnet build --configuration Release
+    cd package && zip -r ReadlineTerminalKeybindings.zip . -x './ReadlineTerminalKeybindings.zip'
 bump version:
     sed -i 's/<Version>.*</<Version>{{ version }}</' ReadlineTerminalKeybindings.csproj
     sed -i '/"Readline Terminal Keybindings"/{n;s/"[^"]*"/"{{ version }}"/}' Plugin.cs
