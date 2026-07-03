@@ -68,10 +68,7 @@ public static class ReadlineTerminalKeybindingsPatch
                 Plugin.Log.LogDebug("^A");
 
                 Plugin.Log.LogDebug(
-                    "setting offset from "
-                        + instance.m_caretBlinkOffsetFromEnd
-                        + " to "
-                        + -instance.m_currentLine.Length
+                    $"setting offset from {instance.m_caretBlinkOffsetFromEnd} to {-instance.m_currentLine.Length}"
                 );
 
                 instance.m_caretBlinkOffsetFromEnd = -instance.m_currentLine.Length;
@@ -81,9 +78,7 @@ public static class ReadlineTerminalKeybindingsPatch
             {
                 Plugin.Log.LogDebug("^E");
 
-                Plugin.Log.LogDebug(
-                    "setting offset from " + instance.m_caretBlinkOffsetFromEnd + " to " + 0
-                );
+                Plugin.Log.LogDebug($"setting offset from {instance.m_caretBlinkOffsetFromEnd} to {0}");
 
                 instance.m_caretBlinkOffsetFromEnd = 0;
             }
@@ -92,7 +87,7 @@ public static class ReadlineTerminalKeybindingsPatch
             {
                 Plugin.Log.LogDebug("^U");
 
-                Plugin.Log.LogDebug("Setting current line " + instance.m_currentLine + " to empty");
+                Plugin.Log.LogDebug($"Setting current line {instance.m_currentLine} to empty");
 
                 instance.m_currentLine = "";
             }
