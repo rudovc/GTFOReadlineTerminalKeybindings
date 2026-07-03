@@ -55,6 +55,16 @@ public static class ReadlineTerminalKeybindingsPatch
         return false;
     }
 
+    private static int FindWordStart(string line, int fromIndex)
+    {
+        var i = fromIndex - 1;
+        while (i >= 0 && line[i] == ' ')
+            i--;
+        while (i >= 0 && line[i] != ' ')
+            i--;
+        return i + 1;
+    }
+
     [HarmonyPrefix]
     public static void CheckCtrlHeldDown(LevelGeneration.LG_ComputerTerminal __instance)
     {
@@ -68,6 +78,8 @@ public static class ReadlineTerminalKeybindingsPatch
         s_previousLine = currentLine;
 
         var offset = __instance.m_caretBlinkOffsetFromEnd;
+        var lineLen = currentLine.Length;
+        var curIdx = System.Math.Clamp(lineLen + offset, 0, lineLen);
 
         var ctrlHeld = UnityInput.GetKeyInt(KeyCode.LeftControl);
 
@@ -79,9 +91,7 @@ public static class ReadlineTerminalKeybindingsPatch
             {
                 Plugin.Log.LogDebug("^A");
 
-                Plugin.Log.LogDebug(
-                    $"setting offset from {offset} to {-currentLine.Length}"
-                );
+                Plugin.Log.LogDebug($"setting offset from {offset} to {-currentLine.Length}");
 
                 __instance.m_caretBlinkOffsetFromEnd = -currentLine.Length;
             }
@@ -90,9 +100,7 @@ public static class ReadlineTerminalKeybindingsPatch
             {
                 Plugin.Log.LogDebug("^E");
 
-                Plugin.Log.LogDebug(
-                    $"setting offset from {offset} to {0}"
-                );
+                Plugin.Log.LogDebug($"setting offset from {offset} to 0");
 
                 __instance.m_caretBlinkOffsetFromEnd = 0;
             }
@@ -104,6 +112,15 @@ public static class ReadlineTerminalKeybindingsPatch
                 Plugin.Log.LogDebug($"Setting current line {currentLine} to empty");
 
                 __instance.m_currentLine = "";
+            }
+
+            if (GetKeyDown(KeyCode.W))
+            {
+                Plugin.Log.LogDebug("^W");
+
+                var wordStart = FindWordStart(currentLine, curIdx);
+                Plugin.Log.LogDebug($"deleting from {wordStart} to {curIdx}");
+                __instance.m_currentLine = currentLine.Remove(wordStart, curIdx - wordStart);
             }
 
             // Bugged right now
@@ -132,13 +149,6 @@ public static class ReadlineTerminalKeybindingsPatch
 
         if (altHeld)
         {
-            var lineLen = currentLine.Length;
-            var curIdx = System.Math.Clamp(
-                lineLen + offset,
-                0,
-                lineLen
-            );
-
             if (GetKeyDown(KeyCode.F))
             {
                 Plugin.Log.LogDebug("A+F");
@@ -150,9 +160,7 @@ public static class ReadlineTerminalKeybindingsPatch
                 while (i < lineLen && currentLine[i] == ' ')
                     i++;
 
-                Plugin.Log.LogDebug(
-                    $"setting offset from {offset} to {i - lineLen}"
-                );
+                Plugin.Log.LogDebug($"setting offset from {offset} to {i - lineLen}");
                 __instance.m_caretBlinkOffsetFromEnd = i - lineLen;
             }
 
@@ -160,18 +168,9 @@ public static class ReadlineTerminalKeybindingsPatch
             {
                 Plugin.Log.LogDebug("A+B");
 
-                var i = curIdx - 1;
-
-                while (i >= 0 && currentLine[i] == ' ')
-                    i--;
-                while (i >= 0 && currentLine[i] != ' ')
-                    i--;
-
-                var target = i + 1;
-                Plugin.Log.LogDebug(
-                    $"setting offset from {offset} to {target - lineLen}"
-                );
-                __instance.m_caretBlinkOffsetFromEnd = target - lineLen;
+                var wordStart = FindWordStart(currentLine, curIdx);
+                Plugin.Log.LogDebug($"setting offset from {offset} to {wordStart - lineLen}");
+                __instance.m_caretBlinkOffsetFromEnd = wordStart - lineLen;
             }
 
             return;
