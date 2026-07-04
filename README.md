@@ -9,6 +9,10 @@ BepInEx mod for GTFO that adds readline keybindings to the in-game terminal.
 | Ctrl+A | Move to start of line |
 | Ctrl+E | Move to end of line |
 | Ctrl+U | Clear line |
+| Ctrl+W | Delete word behind cursor |
+| Ctrl+K | Delete from cursor to end of line |
+| Alt+F | Move forward one word |
+| Alt+B | Move backward one word |
 
 ## Requirements
 
