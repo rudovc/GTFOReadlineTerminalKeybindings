@@ -16,8 +16,7 @@ BepInEx mod for GTFO that adds readline keybindings to the in-game terminal.
 
 ## Requirements
 
-- [BepInEx](https://docs.bepinex.dev/) (IL2CPP, BepInEx 6)
-- [MTFO](https://thunderstore.io/c/gtfo/p/dak/MTFO/)
+- [BepInEx](https://thunderstore.io/c/gtfo/p/BepInEx/BepInExPack_GTFO/)
 
 ## Install
 
