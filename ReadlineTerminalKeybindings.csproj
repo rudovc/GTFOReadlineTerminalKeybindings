@@ -55,8 +55,8 @@
     <PackageReference Include="Lib.Harmony" Version="2.4.2" />
     <Reference Include="Modules-ASM" HintPath="lib/Modules-ASM.dll" />
     <Reference Include="Unity.TextMeshPro" HintPath="lib/Unity.TextMeshPro.dll" />
-    <Reference Include="Unity.InputModule" HintPath="lib/Unity.InputModule.dll" />
-    <Reference Include="Unity.InputLegacyModule" HintPath="lib/Unity.InputLegacyModule.dll" />
+    <Reference Include="Unity.InputModule" HintPath="lib/UnityEngine.InputModule.dll" />
+    <Reference Include="Unity.InputLegacyModule" HintPath="lib/UnityEngine.InputLegacyModule.dll" />
     <Reference Include="Unity.CoreModule" HintPath="lib/UnityEngine.CoreModule.dll" />
     <Reference Include="Il2Cppmscorlib" HintPath="lib/Il2Cppmscorlib.dll" />
   </ItemGroup>

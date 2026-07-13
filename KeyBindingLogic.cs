@@ -54,7 +54,7 @@ internal static class KeyBindingLogic
             }
 
             if (isKeyPressed(KeyCode.K))
-                return (currentLine.Substring(0, curIdx), 0);
+                return (currentLine[..curIdx], 0);
 
             return (currentLine, caretOffset);
         }

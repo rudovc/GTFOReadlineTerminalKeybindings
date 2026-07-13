@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Xunit;
 using KeyCode = BepInEx.Unity.IL2CPP.UnityEngine.KeyCode;
@@ -17,10 +18,8 @@ public class FindWordStartTests
     [InlineData("  hello", 2, 0)]
     [InlineData("   ", 3, 0)]
     [InlineData("", 0, 0)]
-    public void ReturnsCorrectWordStart(string line, int fromIndex, int expected)
-    {
+    public void ReturnsCorrectWordStart(string line, int fromIndex, int expected) =>
         Assert.Equal(expected, KeyBindingLogic.FindWordStart(line, fromIndex));
-    }
 }
 
 public class FindWordEndTests
@@ -34,21 +33,19 @@ public class FindWordEndTests
     [InlineData("hello", 0, 5)]
     [InlineData("", 0, 0)]
     [InlineData("hello", 5, 5)]
-    public void ReturnsCorrectWordEnd(string line, int fromIndex, int expected)
-    {
+    public void ReturnsCorrectWordEnd(string line, int fromIndex, int expected) =>
         Assert.Equal(expected, KeyBindingLogic.FindWordEnd(line, fromIndex));
-    }
 }
 
 public class ApplyKeyBindingTests
 {
-    private static System.Func<KeyCode, bool> PressOnly(params KeyCode[] keys)
+    private static Func<KeyCode, bool> PressOnly(params KeyCode[] keys)
     {
         var set = new HashSet<KeyCode>(keys);
         return key => set.Contains(key);
     }
 
-    private static System.Func<KeyCode, bool> PressNone() => _ => false;
+    private static Func<KeyCode, bool> PressNone() => _ => false;
 
     [Fact]
     public void CtrlA_MidLine_MovesOffsetToEnd()
@@ -56,8 +53,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello world",
             -5,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.A)
         );
 
@@ -71,8 +68,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello",
             0,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.A)
         );
 
@@ -86,8 +83,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "",
             0,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.A)
         );
 
@@ -101,8 +98,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello",
             -3,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.E)
         );
 
@@ -116,8 +113,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello",
             0,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.E)
         );
 
@@ -131,8 +128,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello world",
             -3,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.U)
         );
 
@@ -146,8 +143,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "",
             0,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.U)
         );
 
@@ -161,8 +158,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello world",
             0,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.W)
         );
 
@@ -176,8 +173,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello world",
             -5,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.W)
         );
 
@@ -191,8 +188,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello world",
             -3,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.W)
         );
 
@@ -206,8 +203,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello",
             0,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.W)
         );
 
@@ -221,8 +218,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "",
             0,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.W)
         );
 
@@ -236,8 +233,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "  hello",
             0,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.W)
         );
 
@@ -251,8 +248,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello world",
             -5,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.K)
         );
 
@@ -266,8 +263,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello",
             0,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.K)
         );
 
@@ -281,8 +278,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello",
             -5,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.K)
         );
 
@@ -296,8 +293,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "",
             0,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.K)
         );
 
@@ -311,8 +308,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello world",
             -5,
-            ctrlHeld: false,
-            altHeld: true,
+            false,
+            true,
             PressOnly(KeyCode.F)
         );
 
@@ -326,8 +323,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello world",
             -11,
-            ctrlHeld: false,
-            altHeld: true,
+            false,
+            true,
             PressOnly(KeyCode.F)
         );
 
@@ -341,8 +338,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello",
             0,
-            ctrlHeld: false,
-            altHeld: true,
+            false,
+            true,
             PressOnly(KeyCode.F)
         );
 
@@ -356,8 +353,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello   world",
             -8,
-            ctrlHeld: false,
-            altHeld: true,
+            false,
+            true,
             PressOnly(KeyCode.F)
         );
 
@@ -371,8 +368,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello world",
             0,
-            ctrlHeld: false,
-            altHeld: true,
+            false,
+            true,
             PressOnly(KeyCode.B)
         );
 
@@ -386,8 +383,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello world",
             -3,
-            ctrlHeld: false,
-            altHeld: true,
+            false,
+            true,
             PressOnly(KeyCode.B)
         );
 
@@ -401,8 +398,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello world",
             -5,
-            ctrlHeld: false,
-            altHeld: true,
+            false,
+            true,
             PressOnly(KeyCode.B)
         );
 
@@ -416,8 +413,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello",
             -5,
-            ctrlHeld: false,
-            altHeld: true,
+            false,
+            true,
             PressOnly(KeyCode.B)
         );
 
@@ -431,8 +428,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello world",
             -3,
-            ctrlHeld: false,
-            altHeld: false,
+            false,
+            false,
             PressNone()
         );
 
@@ -446,8 +443,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello",
             -2,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressNone()
         );
 
@@ -461,8 +458,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello",
             -2,
-            ctrlHeld: false,
-            altHeld: true,
+            false,
+            true,
             PressNone()
         );
 
@@ -476,8 +473,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "hello",
             -100,
-            ctrlHeld: true,
-            altHeld: false,
+            true,
+            false,
             PressOnly(KeyCode.A)
         );
 
@@ -491,8 +488,8 @@ public class ApplyKeyBindingTests
         var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
             "",
             -5,
-            ctrlHeld: false,
-            altHeld: false,
+            false,
+            false,
             PressNone()
         );
 

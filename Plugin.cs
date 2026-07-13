@@ -3,6 +3,7 @@ using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using LevelGeneration;
 using KeyCode = BepInEx.Unity.IL2CPP.UnityEngine.KeyCode;
 using UnityInput = BepInEx.Unity.IL2CPP.UnityEngine.Input;
 
@@ -16,7 +17,7 @@ namespace ReadlineTerminalKeybindings;
 [BepInProcess("GTFO.exe")]
 public class Plugin : BasePlugin
 {
-    internal static new ManualLogSource Log = null!;
+    internal new static ManualLogSource Log = null!;
 
     // Ctrl: A(start), E(end), F(forward), B(backward), U(clear line), K(kill to end), W(delete word)
     // Alt:  F(forward word), B(backward word)
@@ -33,7 +34,7 @@ public class Plugin : BasePlugin
     }
 }
 
-[HarmonyPatch(typeof(LevelGeneration.LG_ComputerTerminal), "Update")]
+[HarmonyPatch(typeof(LG_ComputerTerminal), "Update")]
 public static class ReadlineTerminalKeybindingsPatch
 {
     private static readonly HashSet<KeyCode> s_heldKeys = [];
@@ -43,23 +44,19 @@ public static class ReadlineTerminalKeybindingsPatch
     {
         var isPressed = UnityInput.GetKeyInt(key);
         if (isPressed)
-        {
             return s_heldKeys.Add(key);
-        }
 
         s_heldKeys.Remove(key);
         return false;
     }
 
     [HarmonyPrefix]
-    public static void CheckReadlineBindings(LevelGeneration.LG_ComputerTerminal __instance)
+    public static void CheckReadlineBindings(LG_ComputerTerminal __instance)
     {
         var currentLine = __instance.m_currentLine;
 
         if (s_previousLine.Length > 0 && currentLine.Length == 0)
-        {
             __instance.m_caretBlinkOffsetFromEnd = 0;
-        }
         s_previousLine = currentLine;
 
         var offset = __instance.m_caretBlinkOffsetFromEnd;
@@ -78,8 +75,6 @@ public static class ReadlineTerminalKeybindingsPatch
         __instance.m_caretBlinkOffsetFromEnd = newOffset;
 
         if (!ctrlHeld && !altHeld)
-        {
             s_heldKeys.Clear();
-        }
     }
 }
