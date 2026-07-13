@@ -1,5 +1,5 @@
 using System;
-using KeyCode = BepInEx.Unity.IL2CPP.UnityEngine.KeyCode;
+using KeyCode = UnityEngine.KeyCode;
 
 namespace ReadlineTerminalKeybindings;
 

@@ -4,8 +4,8 @@ using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using LevelGeneration;
-using KeyCode = BepInEx.Unity.IL2CPP.UnityEngine.KeyCode;
-using UnityInput = BepInEx.Unity.IL2CPP.UnityEngine.Input;
+using KeyCode = UnityEngine.KeyCode;
+using UnityInput = UnityEngine.Input;
 
 namespace ReadlineTerminalKeybindings;
 
@@ -42,7 +42,7 @@ public static class ReadlineTerminalKeybindingsPatch
 
     private static bool GetKeyDown(KeyCode key)
     {
-        var isPressed = UnityInput.GetKeyInt(key);
+        var isPressed = UnityInput.GetKeyDown(key);
         if (isPressed)
             return s_heldKeys.Add(key);
 
@@ -60,8 +60,8 @@ public static class ReadlineTerminalKeybindingsPatch
         s_previousLine = currentLine;
 
         var offset = __instance.m_caretBlinkOffsetFromEnd;
-        var ctrlHeld = UnityInput.GetKeyInt(KeyCode.LeftControl);
-        var altHeld = UnityInput.GetKeyInt(KeyCode.LeftAlt);
+        var ctrlHeld = UnityInput.GetKeyDown(KeyCode.LeftControl);
+        var altHeld = UnityInput.GetKeyDown(KeyCode.LeftAlt);
 
         var (newLine, newOffset) = KeyBindingLogic.ApplyKeyBinding(
             currentLine,

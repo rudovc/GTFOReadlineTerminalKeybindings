@@ -2,6 +2,9 @@ init:
     dotnet restore
 build:
     dotnet build --configuration Debug
+format:
+    jb cleanupcode ReadlineTerminalKeybindings.slnx
+    dotnet format ReadlineTerminalKeybindings.slnx
 release:
     dotnet build --configuration Release
     cd package && zip -r ReadlineTerminalKeybindings.zip . -x './ReadlineTerminalKeybindings.zip'

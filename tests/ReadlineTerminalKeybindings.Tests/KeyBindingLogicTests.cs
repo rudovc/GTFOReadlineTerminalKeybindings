@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Xunit;
-using KeyCode = BepInEx.Unity.IL2CPP.UnityEngine.KeyCode;
+using KeyCode = UnityEngine.KeyCode;
 
 namespace ReadlineTerminalKeybindings.Tests;
 
@@ -42,7 +42,7 @@ public class ApplyKeyBindingTests
     private static Func<KeyCode, bool> PressOnly(params KeyCode[] keys)
     {
         var set = new HashSet<KeyCode>(keys);
-        return key => set.Contains(key);
+        return set.Contains;
     }
 
     private static Func<KeyCode, bool> PressNone() => _ => false;
@@ -440,13 +440,7 @@ public class ApplyKeyBindingTests
     [Fact]
     public void CtrlHeld_NoKeyPressed_PassesThrough()
     {
-        var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
-            "hello",
-            -2,
-            true,
-            false,
-            PressNone()
-        );
+        var (line, offset) = KeyBindingLogic.ApplyKeyBinding("hello", -2, true, false, PressNone());
 
         Assert.Equal("hello", line);
         Assert.Equal(-2, offset);
@@ -455,13 +449,7 @@ public class ApplyKeyBindingTests
     [Fact]
     public void AltHeld_NoKeyPressed_PassesThrough()
     {
-        var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
-            "hello",
-            -2,
-            false,
-            true,
-            PressNone()
-        );
+        var (line, offset) = KeyBindingLogic.ApplyKeyBinding("hello", -2, false, true, PressNone());
 
         Assert.Equal("hello", line);
         Assert.Equal(-2, offset);
@@ -485,13 +473,7 @@ public class ApplyKeyBindingTests
     [Fact]
     public void ZeroLengthLine_AnyOffset_NoOp()
     {
-        var (line, offset) = KeyBindingLogic.ApplyKeyBinding(
-            "",
-            -5,
-            false,
-            false,
-            PressNone()
-        );
+        var (line, offset) = KeyBindingLogic.ApplyKeyBinding("", -5, false, false, PressNone());
 
         Assert.Equal("", line);
         Assert.Equal(-5, offset);
