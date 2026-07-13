@@ -1,6 +1,6 @@
 {
   "name": "Terminal Readline Keybindings",
-  "version_number": "0.1.0",
+  "version_number": "0.1.1",
   "description": "Tiny client side mod that gives readline keybindings to the GTFO Terminal",
   "dependencies": ["BepInEx-BepInExPack_GTFO-3.2.2"]
 }

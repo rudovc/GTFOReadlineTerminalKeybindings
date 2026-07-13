@@ -12,7 +12,7 @@ namespace ReadlineTerminalKeybindings;
 [BepInPlugin(
     "online.121ducks.rudovc.ReadlineTerminalKeybindings",
     "Readline Terminal Keybindings",
-    "0.1.0"
+    "0.1.1"
 )]
 [BepInProcess("GTFO.exe")]
 public class Plugin : BasePlugin
