@@ -1,4 +1,5 @@
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
@@ -17,6 +18,7 @@ namespace ReadlineTerminalKeybindings;
 public class Plugin : BasePlugin
 {
     internal new static ManualLogSource Log = null!;
+    internal static ConfigEntry<bool> DebugLogging = null!;
 
     // Ctrl: A(start), E(end), F(forward), B(backward), U(clear line), K(kill to end), W(delete word)
     // Alt:  F(forward word), B(backward word)
@@ -25,6 +27,13 @@ public class Plugin : BasePlugin
     {
         Log = base.Log;
         Log.LogInfo($"Readline Terminal Keybindings is loaded");
+
+        DebugLogging = Config.Bind(
+            "Debug",
+            "LogKeyState",
+            false,
+            "Log ctrl/alt state and the current line on every terminal update."
+        );
 
         var harmony = new Harmony("online.121ducks.rudovc.readline_terminal_keybindings");
         harmony.PatchAll();
@@ -59,8 +68,11 @@ public static class ReadlineTerminalKeybindingsPatch
         s_previousLine = currentLine;
 
         var offset = __instance.m_caretBlinkOffsetFromEnd;
-        var ctrlHeld = UnityInput.GetKeyDown(KeyCode.LeftControl);
-        var altHeld = UnityInput.GetKeyDown(KeyCode.LeftAlt);
+        var ctrlHeld = UnityInput.GetKey(KeyCode.LeftControl);
+        var altHeld = UnityInput.GetKey(KeyCode.LeftAlt);
+
+        if (Plugin.DebugLogging.Value)
+            Plugin.Log.LogInfo($"ctrl={ctrlHeld} alt={altHeld} offset={offset} line=\"{currentLine}\"");
 
         var (newLine, newOffset) = KeyBindingLogic.ApplyKeyBinding(
             currentLine,
