@@ -1,4 +1,3 @@
-using System;
 using KeyCode = UnityEngine.KeyCode;
 
 namespace ReadlineTerminalKeybindings;
